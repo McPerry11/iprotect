@@ -1,36 +1,53 @@
 import { StatusBar } from 'expo-status-bar';
 import { Button, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
 
 export default function App() {
+  const [showPassword, setShowPassword] = useState(true);
+  const [eyeIcon, setEyeIcon] = useState('eye');
+
+  function togglePassword() {
+    setShowPassword(() => !showPassword);
+    setEyeIcon(() => eyeIcon == 'eye' ? 'eye-off' : 'eye');
+  }
+
   return (
+    // App Layout
     <View style={[styles.appContainer, styles.border]}>
       <StatusBar style='auto'/>
 
+      {/* Login Layout */}
       <View style={[styles.login, styles.border]}>
         <Text style={styles.title}>Login</Text>
 
+        {/* Username Input */}
         <View style={styles.usernameContainer}>
           <View style={[styles.icon, styles.inputIcon]}>
             <Ionicons name='person' size={24}/>
           </View>
-          <TextInput style={[styles.input, styles.username]} placeholder='Username'/>
+          <TextInput style={[styles.input, styles.username]} placeholder='Username' autoFocus/>
         </View>
 
+        {/* Password Input */}
         <View style={styles.passwordContainer}>
           <View style={[styles.icon, styles.inputIcon]}>
             <Ionicons name='lock-closed' size={24}/>
           </View>
-          <TextInput style={[styles.input, styles.password]} placeholder='Password'/>
-          <Pressable style={[styles.icon, styles.togglePassword]}>
-            <Ionicons name='eye' size={24} />
+          <TextInput style={[styles.input, styles.password]} placeholder='Password' secureTextEntry={showPassword}/>
+          <Pressable style={[styles.icon, styles.togglePassword]} onPress={togglePassword}>
+            <Ionicons name={eyeIcon} size={24} />
           </Pressable>
         </View>
 
+        {/* Error Message */}
         <Text style={styles.error}>Error</Text>
+
+        {/* Submit Button */}
         <View style={styles.submit}>
           <Button title='Submit'/>
         </View>
+
       </View>
 
     </View>
@@ -65,6 +82,8 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     padding: 5,
+    paddingRight: 10,
+    height: 40,
   },
 
   inputIcon: {
@@ -91,7 +110,7 @@ const styles = StyleSheet.create({
   },
   
   title: {
-    fontSize: 20,
+    fontSize: 30,
     fontWeight: 'bold',
     textAlign: 'center',
   },
