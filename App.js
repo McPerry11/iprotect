@@ -1,15 +1,67 @@
 import { StatusBar } from 'expo-status-bar';
-import { Button, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function App() {
-  const [showPassword, setShowPassword] = useState(true);
-  const [eyeIcon, setEyeIcon] = useState('eye');
+  // Use States
+  const [readOnly, setReadOnly] = useState(false);
+  const [hidePassword, setHidePassword] = useState({
+    isHidden: true,
+    icon: 'eye',
+  });
+  const [form, setForm] = useState({
+    submitted: false,
+    username: '',
+    password: '',
+  });
+  
+  // Event Handlers
+  function setPassword(password) {
+    setForm(previousState => {
+      return {
+        ...previousState,
+        password: password,
+      }
+    });
+  }
+
+  function setUsername(username) {
+    setForm(previousState => {
+      return {
+        ...previousState,
+        username: username,
+      }
+    });
+  }
+
+  function submitForm() {
+    if (!form.submitted) {
+      setReadOnly(true);
+      if (!hidePassword.isHidden) togglePassword();
+      setForm(previousState => {
+        return {
+          ...previousState,
+          submitted: true,
+        }
+      });
+    }
+  }
+
+  // Use effect triggers once form submitted is true
+  useEffect(() => {
+    console.log(form);
+  }, [form.submitted]);
 
   function togglePassword() {
-    setShowPassword(() => !showPassword);
-    setEyeIcon(() => eyeIcon == 'eye' ? 'eye-off' : 'eye');
+    if (!form.submitted) {
+      setHidePassword(previousState => {
+        return {
+          isHidden: !previousState.isHidden, 
+          icon: previousState.isHidden ? 'eye-off' : 'eye',
+        }
+      });
+    }
   }
 
   return (
@@ -26,7 +78,7 @@ export default function App() {
           <View style={[styles.icon, styles.inputIcon]}>
             <Ionicons name='person' size={24}/>
           </View>
-          <TextInput style={[styles.input, styles.username]} placeholder='Username' autoFocus/>
+          <TextInput style={[styles.input, styles.username]} onChangeText={input => setUsername(input)} onSubmitEditing={() => {this.passwordInput.focus()}} ref={input => {this.usernameInput = input}} placeholder='Username' enterKeyHint='next' readOnly={readOnly} blurOnSubmit={false} autoFocus/>
         </View>
 
         {/* Password Input */}
@@ -34,9 +86,9 @@ export default function App() {
           <View style={[styles.icon, styles.inputIcon]}>
             <Ionicons name='lock-closed' size={24}/>
           </View>
-          <TextInput style={[styles.input, styles.password]} placeholder='Password' secureTextEntry={showPassword}/>
-          <Pressable style={[styles.icon, styles.togglePassword]} onPress={togglePassword}>
-            <Ionicons name={eyeIcon} size={24} />
+          <TextInput style={[styles.input, styles.password]} onChangeText={input => setPassword(input)} onSubmitEditing={() => {this.passwordInput.blur()}} ref={input => {this.passwordInput = input}} placeholder='Password' enterKeyHint='enter' secureTextEntry={hidePassword.isHidden} readOnly={readOnly} blurOnSubmit={false} selectTextOnFocus/>
+          <Pressable style={[styles.icon, styles.togglePassword, {backgroundColor: hidePassword.isHidden ? 'silver' : 'dimgrey'}]} onPress={togglePassword} disabled={form.submitted}>
+            <Ionicons name={hidePassword.icon} size={24} color={hidePassword.isHidden ? 'black' : 'white'}/>
           </Pressable>
         </View>
 
@@ -45,7 +97,10 @@ export default function App() {
 
         {/* Submit Button */}
         <View style={styles.submit}>
-          <Button title='Submit'/>
+          <Pressable style={styles.button} onPress={submitForm} disabled={form.submitted}>
+            <Text style={[styles.buttonContent, {display: form.submitted ? 'none' : 'flex'}]}>SUBMIT</Text>
+            <ActivityIndicator style={[styles.buttonContent, {display: form.submitted ? 'flex' : 'none'}]} size='small' color='white'/>
+          </Pressable>
         </View>
 
       </View>
@@ -66,6 +121,16 @@ const styles = StyleSheet.create({
   border: {
     borderWidth: 1,
     borderColor: 'red',
+  },
+
+  button: {
+    backgroundColor: 'dodgerblue',
+  },
+
+  buttonContent: {
+    textAlign: 'center',
+    color: 'white',
+    padding: 10,
   },
   
   error: {
