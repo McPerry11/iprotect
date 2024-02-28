@@ -1,11 +1,17 @@
 import { StatusBar } from 'expo-status-bar';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
+import { useRef, useState } from 'react';
 
 export default function App() {
-  // Use States
+  // Use Refs and Use States
+  const usernameInput = useRef();
+  const passwordInput = useRef();
   const [readOnly, setReadOnly] = useState(false);
+  const [error, setError] = useState({
+    type: '',
+    message: '',
+  });
   const [hidePassword, setHidePassword] = useState({
     isHidden: true,
     icon: 'eye',
@@ -16,42 +22,90 @@ export default function App() {
     password: '',
   });
   
+  // Dynamic Styles
+  const togglePasswordButtonStyle = {
+    buttonColor: {backgroundColor: hidePassword.isHidden ? 'silver' : 'dimgrey'},
+    iconColor: hidePassword.isHidden ? 'black' : 'white',
+  };
+  const validationFormStyle = {
+    passwordIconColor: error.type== 'incompleteForm' && form.password == '' ? 'red' : 'black',
+    passwordInputBorder: {borderColor: error.type == 'incompleteForm' && form.password == '' ? 'red' : 'black'},
+    usernameIconColor: error.type== 'incompleteForm' && form.username == '' ? 'red' : 'black',
+    usernameInputBorder: {borderColor: error.type == 'incompleteForm' && form.username == '' ? 'red' : 'black'},
+  };
+  const submitButton = {
+    buttonColor: {backgroundColor: error.type != '' ? 'silver' : 'dodgerblue'},
+    disableButton: form.submitted || error.type != '',
+    loadingDisplay: {display: form.submitted ? 'flex' : 'none'},
+    submitTextDisplay: {display: form.submitted ? 'none' : 'flex'},
+  };
+
   // Event Handlers
-  function setPassword(password) {
+  const focusPasswordInput = () => {
+    passwordInput.current.focus();
+  }
+
+  function setPassword(input) {
+    if (error.type != '') {
+      if (form.username != '') {
+        setError({
+          type: '',
+          message: '',
+        });
+      }
+    }
     setForm(previousState => {
       return {
         ...previousState,
-        password: password,
+        password: input,
       }
     });
   }
 
-  function setUsername(username) {
+  function setUsername(input) {
+    if (error.type != '') {
+      if (form.password != '') {
+        setError({
+          type: '',
+          message: '',
+        });
+      }
+    }
     setForm(previousState => {
       return {
         ...previousState,
-        username: username,
+        username: input,
       }
     });
   }
-
+  
   function submitForm() {
     if (!form.submitted) {
-      setReadOnly(true);
       if (!hidePassword.isHidden) togglePassword();
-      setForm(previousState => {
-        return {
-          ...previousState,
-          submitted: true,
+      if (form.username == '' || form.password == '') {
+        setError({
+          type: 'incompleteForm',
+          message: 'Please fill out required entry fields.',
+        });
+
+        if (form.username == '') {
+          usernameInput.current.focus();
+        } else {
+          focusPasswordInput();
         }
-      });
+        console.log(error);
+      } else {
+        setReadOnly(true);
+        setForm(previousState => {
+          return {
+            ...previousState,
+            submitted: true,
+          }
+        });
+        console.log(form);
+      }
     }
   }
-
-  // Use effect triggers once form submitted is true
-  useEffect(() => {
-    console.log(form);
-  }, [form.submitted]);
 
   function togglePassword() {
     if (!form.submitted) {
@@ -64,6 +118,7 @@ export default function App() {
     }
   }
 
+
   return (
     // App Layout
     <View style={[styles.appContainer, styles.border]}>
@@ -75,31 +130,31 @@ export default function App() {
 
         {/* Username Input */}
         <View style={styles.usernameContainer}>
-          <View style={[styles.icon, styles.inputIcon]}>
-            <Ionicons name='person' size={24}/>
+          <View style={[styles.icon, styles.inputIcon, validationFormStyle.usernameInputBorder]}>
+            <Ionicons name='person' size={24} color={validationFormStyle.usernameIconColor}/>
           </View>
-          <TextInput style={[styles.input, styles.username]} onChangeText={input => setUsername(input)} onSubmitEditing={() => {this.passwordInput.focus()}} ref={input => {this.usernameInput = input}} placeholder='Username' enterKeyHint='next' readOnly={readOnly} blurOnSubmit={false} autoFocus/>
+          <TextInput style={[styles.input, styles.username, validationFormStyle.usernameInputBorder]} onChangeText={setUsername} onSubmitEditing={focusPasswordInput} ref={usernameInput} placeholder='Username' enterKeyHint='next' blurOnSubmit={false} readOnly={readOnly} autoFocus/>
         </View>
 
         {/* Password Input */}
         <View style={styles.passwordContainer}>
-          <View style={[styles.icon, styles.inputIcon]}>
-            <Ionicons name='lock-closed' size={24}/>
+          <View style={[styles.icon, styles.inputIcon, validationFormStyle.passwordInputBorder]}>
+            <Ionicons name='lock-closed' size={24} color={validationFormStyle.passwordIconColor}/>
           </View>
-          <TextInput style={[styles.input, styles.password]} onChangeText={input => setPassword(input)} onSubmitEditing={() => {this.passwordInput.blur()}} ref={input => {this.passwordInput = input}} placeholder='Password' enterKeyHint='enter' secureTextEntry={hidePassword.isHidden} readOnly={readOnly} blurOnSubmit={false} selectTextOnFocus/>
-          <Pressable style={[styles.icon, styles.togglePassword, {backgroundColor: hidePassword.isHidden ? 'silver' : 'dimgrey'}]} onPress={togglePassword} disabled={form.submitted}>
-            <Ionicons name={hidePassword.icon} size={24} color={hidePassword.isHidden ? 'black' : 'white'}/>
+          <TextInput style={[styles.input, styles.password, validationFormStyle.passwordInputBorder]} onChangeText={setPassword} onSubmitEditing={submitForm} ref={passwordInput} placeholder='Password' enterKeyHint='enter' secureTextEntry={hidePassword.isHidden} blurOnSubmit={false} readOnly={readOnly} selectTextOnFocus/>
+          <Pressable style={[styles.icon, styles.togglePassword, togglePasswordButtonStyle.buttonColor]} onPress={togglePassword} disabled={form.submitted}>
+            <Ionicons name={hidePassword.icon} size={24} color={togglePasswordButtonStyle.iconColor}/>
           </Pressable>
         </View>
 
         {/* Error Message */}
-        <Text style={styles.error}>Error</Text>
+        <Text style={styles.error}>{error.message}</Text>
 
         {/* Submit Button */}
         <View style={styles.submit}>
-          <Pressable style={styles.button} onPress={submitForm} disabled={form.submitted}>
-            <Text style={[styles.buttonContent, {display: form.submitted ? 'none' : 'flex'}]}>SUBMIT</Text>
-            <ActivityIndicator style={[styles.buttonContent, {display: form.submitted ? 'flex' : 'none'}]} size='small' color='white'/>
+          <Pressable style={submitButton.buttonColor} onPress={submitForm} disabled={submitButton.disableButton}>
+            <Text style={[styles.buttonContent, submitButton.submitTextDisplay]}>SUBMIT</Text>
+            <ActivityIndicator style={[styles.buttonContent, submitButton.loadingDisplay]} size='small' color='white'/>
           </Pressable>
         </View>
 
@@ -121,10 +176,6 @@ const styles = StyleSheet.create({
   border: {
     borderWidth: 1,
     borderColor: 'red',
-  },
-
-  button: {
-    backgroundColor: 'dodgerblue',
   },
 
   buttonContent: {
