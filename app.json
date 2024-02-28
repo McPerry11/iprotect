@@ -2,7 +2,8 @@
   "expo": {
     "name": "iprotect",
     "slug": "iprotect",
-    "version": "0.5.0",
+    "version": "0.6.0",
+    "scheme": "app-scheme",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -25,6 +26,9 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-router"
+    ]
   }
 }

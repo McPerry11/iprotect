@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 
 import { Ionicons } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
 
-export default function App() {
+export default function Page() {
   // Use Refs and Use States
   const usernameInput = useRef();
   const passwordInput = useRef();
@@ -23,6 +23,12 @@ export default function App() {
   });
   
   // Dynamic Styles
+  const submitButton = {
+    buttonColor: {backgroundColor: error.type != '' ? 'silver' : 'dodgerblue'},
+    disableButton: form.submitted || error.type != '',
+    loadingDisplay: {display: form.submitted ? 'flex' : 'none'},
+    submitTextDisplay: {display: form.submitted ? 'none' : 'flex'},
+  };
   const togglePasswordButtonStyle = {
     buttonColor: {backgroundColor: hidePassword.isHidden ? 'silver' : 'dimgrey'},
     iconColor: hidePassword.isHidden ? 'black' : 'white',
@@ -33,12 +39,6 @@ export default function App() {
     usernameIconColor: error.type== 'incompleteForm' && form.username == '' ? 'red' : 'black',
     usernameInputBorder: {borderColor: error.type == 'incompleteForm' && form.username == '' ? 'red' : 'black'},
   };
-  const submitButton = {
-    buttonColor: {backgroundColor: error.type != '' ? 'silver' : 'dodgerblue'},
-    disableButton: form.submitted || error.type != '',
-    loadingDisplay: {display: form.submitted ? 'flex' : 'none'},
-    submitTextDisplay: {display: form.submitted ? 'none' : 'flex'},
-  };
 
   // Event Handlers
   const focusPasswordInput = () => {
@@ -46,13 +46,11 @@ export default function App() {
   }
 
   function setPassword(input) {
-    if (error.type != '') {
-      if (form.username != '') {
-        setError({
-          type: '',
-          message: '',
-        });
-      }
+    if (error.type != '' && form.username != '') {
+      setError({
+        type: '',
+        message: '',
+      });
     }
     setForm(previousState => {
       return {
@@ -63,13 +61,11 @@ export default function App() {
   }
 
   function setUsername(input) {
-    if (error.type != '') {
-      if (form.password != '') {
-        setError({
-          type: '',
-          message: '',
-        });
-      }
+    if (error.type != '' && form.password != '') {
+      setError({
+        type: '',
+        message: '',
+      });
     }
     setForm(previousState => {
       return {
@@ -82,6 +78,7 @@ export default function App() {
   function submitForm() {
     if (!form.submitted) {
       if (!hidePassword.isHidden) togglePassword();
+
       if (form.username == '' || form.password == '') {
         setError({
           type: 'incompleteForm',
@@ -93,7 +90,7 @@ export default function App() {
         } else {
           focusPasswordInput();
         }
-        console.log(error);
+
       } else {
         setReadOnly(true);
         setForm(previousState => {
@@ -122,7 +119,7 @@ export default function App() {
   return (
     // App Layout
     <View style={[styles.appContainer, styles.border]}>
-      <StatusBar style='auto'/>
+      <StatusBar style='auto' animated/>
 
       {/* Login Layout */}
       <View style={[styles.login, styles.border]}>
@@ -169,7 +166,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 50,
+    paddingTop: 40,
     paddingHorizontal: 15,
   },
 
