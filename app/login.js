@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
 
@@ -118,7 +118,6 @@ export default function Page() {
   return (
     // App Layout
     <View style={styles.appContainer}>
-      <StatusBar barStyle={'dark-content'} backgroundColor={'dodgerblue'} animated/>
 
       {/* Login Layout */}
       <View style={styles.login}>
