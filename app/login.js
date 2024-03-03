@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar';
-import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, StatusBar, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRef, useState } from 'react';
 
@@ -118,12 +117,12 @@ export default function Page() {
 
   return (
     // App Layout
-    <View style={[styles.appContainer, styles.border]}>
-      <StatusBar style='auto' animated/>
+    <View style={styles.appContainer}>
+      <StatusBar barStyle={'dark-content'} backgroundColor={'dodgerblue'} animated/>
 
       {/* Login Layout */}
-      <View style={[styles.login, styles.border]}>
-        <Text style={styles.title}>Login</Text>
+      <View style={styles.login}>
+        <Text style={styles.title}>iProtect</Text>
 
         {/* Username Input */}
         <View style={styles.usernameContainer}>
@@ -148,9 +147,9 @@ export default function Page() {
         <Text style={styles.error}>{error.message}</Text>
 
         {/* Submit Button */}
-        <View style={styles.submit}>
-          <Pressable style={submitButton.buttonColor} onPress={submitForm} disabled={submitButton.disableButton}>
-            <Text style={[styles.buttonContent, submitButton.submitTextDisplay]}>SUBMIT</Text>
+        <View style={styles.submitContainer}>
+          <Pressable style={[styles.submit, submitButton.buttonColor]} onPress={submitForm} disabled={submitButton.disableButton}>
+            <Text style={[styles.buttonContent, submitButton.submitTextDisplay]}>LOG IN</Text>
             <ActivityIndicator style={[styles.buttonContent, submitButton.loadingDisplay]} size='small' color='white'/>
           </Pressable>
         </View>
@@ -164,53 +163,59 @@ export default function Page() {
 const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 40,
-    paddingHorizontal: 15,
+    justifyContent: 'center',
+    backgroundColor: 'dodgerblue',
   },
 
+  // Border is only used for frontend styling and debugging
   border: {
     borderWidth: 1,
     borderColor: 'red',
   },
 
   buttonContent: {
+    padding: 10,
     textAlign: 'center',
     color: 'white',
-    padding: 10,
   },
   
   error: {
-    color: 'red',
     marginTop: 10,
+    color: 'red',
   },
   
   icon: {
-    justifyContent: 'center',
     paddingHorizontal: 5,
+    justifyContent: 'center',
   },
   
   input: {
     flex: 1,
-    borderWidth: 1,
     padding: 5,
     paddingRight: 10,
+    borderWidth: 1,
     height: 40,
   },
 
   inputIcon: {
     borderWidth: 1,
     borderRightWidth: 0,
+    borderTopLeftRadius: 5,
+    borderBottomLeftRadius: 5,
   },
   
   login: {
-    width: '80%',
+    padding: 25,
+    width: '85%',
+    backgroundColor: 'white',
+    borderRadius: 10,
   },
 
   password: {
     borderLeftWidth: 0,
     borderRightWidth: 0,
+    borderTopRightRadius: .01,
   },
   
   passwordContainer: {
@@ -219,21 +224,29 @@ const styles = StyleSheet.create({
   },
   
   submit: {
+    borderRadius: 5,
+  },
+
+  submitContainer: {
     marginTop: 20,
   },
   
   title: {
+    textAlign: 'center',
     fontSize: 30,
     fontWeight: 'bold',
-    textAlign: 'center',
   },
 
   togglePassword: {
     borderWidth: 1,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
   },
 
   username: {
     borderLeftWidth: 0,
+    borderTopRightRadius: 5,
+    borderBottomRightRadius: 5,
   },
 
   usernameContainer: {
