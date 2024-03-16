@@ -22,31 +22,7 @@ const styles = StyleSheet.create({
     borderColor: 'red',
   },
 
-  burgerMenu: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 50,
-  },
-
   dashboard: {
     flex: 1,    
-  },
-
-  navbar: {
-    flexDirection: 'row',
-    backgroundColor: 'dodgerblue',
-    height: 50,
-  },
-
-  navbarHeader: {
-    flex: 1,
-    justifyContent: 'center',
-    paddingLeft: 10,
-  },
-
-  navbarTitle: {
-    color: 'white',
-    fontWeight: 'bold',
-    fontSize: 20,
   },
 });

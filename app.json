@@ -2,7 +2,7 @@
   "expo": {
     "name": "iprotect",
     "slug": "iprotect",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "scheme": "app-scheme",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
